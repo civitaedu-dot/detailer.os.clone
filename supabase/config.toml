@@ -1,0 +1,30 @@
+# Configuração do Supabase CLI para o RotaPronta.
+project_id = "rotapronta"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 17
+
+[storage]
+enabled = true
+file_size_limit = "4MiB"
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://localhost:5173/redefinir-senha", "http://localhost:4173/redefinir-senha"]
+enable_signup = true
+minimum_password_length = 8
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true
+
+[functions.rota-api]
+verify_jwt = true

@@ -1,0 +1,50 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-bg: #f4f5f2;
+  --color-surface: #ffffff;
+  --color-sunken: #eceee9;
+  --color-ink: #1b201d;
+  --color-ink-2: #48514b;
+  --color-ink-3: #6b746e;
+  --color-line: #d6dbd6;
+  --color-graphite: #1f2421;
+  --color-graphite-2: #2c332f;
+  --color-brand: #0d8a3d;
+  --color-brand-strong: #0a6d30;
+  --color-brand-soft: #e2f5e9;
+  --color-lime: #3ddc84;
+  --color-warn: #8a4304;
+  --color-warn-line: #e8a23a;
+  --color-warn-soft: #fff3dc;
+  --color-danger: #b42318;
+  --color-danger-soft: #fde9e7;
+  --color-info: #1d4ed8;
+  --color-info-soft: #e7eefd;
+  --radius-xl: 14px;
+  --radius-2xl: 18px;
+  --shadow-card: 0 1px 2px rgb(16 24 20 / 0.06), 0 1px 1px rgb(16 24 20 / 0.04);
+  --shadow-float: 0 8px 24px rgb(16 24 20 / 0.14);
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    @apply bg-bg text-ink antialiased;
+    font-feature-settings: "cv11", "ss01";
+    min-height: 100dvh;
+  }
+  :focus-visible { outline: 3px solid var(--color-info); outline-offset: 2px; }
+  button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+  input, select, textarea { font-size: 16px; } /* evita zoom no iOS */
+}
+
+@utility safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+@utility safe-top { padding-top: env(safe-area-inset-top); }
+@utility tabular { font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
