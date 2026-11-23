@@ -122,6 +122,7 @@ test("sem conexão: registro fica na fila local e sincroniza ao reconectar", asy
   await planFromBase(page);
   await page.getByRole("button", { name: /Iniciar entregas/ }).click();
   await page.waitForURL("**/entrega");
+  await expect(page.getByText("0 de 7 entregas concluídas")).toBeVisible();
   await context.setOffline(true);
   await expect(page.getByText(/Sem conexão/).first()).toBeVisible();
   await page.getByRole("button", { name: /^Entregue$/ }).click();

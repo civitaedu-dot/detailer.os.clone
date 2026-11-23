@@ -1,5 +1,5 @@
 import { ArrowDown, ArrowUp, GripVertical, ListOrdered, Navigation, RefreshCw, Settings2, Undo2 } from "lucide-react";
-import { useMemo, useState, type DragEvent } from "react";
+import { useEffect, useMemo, useState, type DragEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { formatDistance, formatDuration } from "@core/geo.ts";
@@ -53,6 +53,9 @@ export function RoutePlan() {
   const [busy, setBusy] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [drag, setDrag] = useState<number | null>(null);
+
+  // Pré-carrega a tela de entrega: ela precisa abrir mesmo se o sinal cair logo depois.
+  useEffect(() => { void import("./Delivery.tsx"); }, []);
 
   const groups = useMemo(() => (bundle?.route ? groupStops(bundle) : []), [bundle]);
   const shown = reorder ?? groups;
