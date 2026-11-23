@@ -9,3 +9,9 @@ node scripts/video/render.mjs              # renderiza os quadros (30 fps)
 ffmpeg -framerate 30 -i scripts/video/frames/%05d.jpg -c:v libx264 -crf 18 -pix_fmt yuv420p -movflags +faststart video-demo/RotaPronta-demo.mp4
 ```
 A animação está em `motion.html` (função `render(t)`); `preview.mjs 3.5 20` gera quadros avulsos para conferir.
+
+## Áudio
+- `audio.py` sintetiza a trilha e os efeitos (originais, sem amostras de terceiros), sincronizados com as cenas.
+- `mix-audio.sh` gera `video-demo/RotaPronta-demo-com-audio.mp4`.
+- Narração: veja `narracao.md`. Com as falas gravadas, `scripts/video/mix-audio.sh <pasta>` gera
+  `video-demo/RotaPronta-demo-narrado.mp4`, abaixando a trilha automaticamente sob a voz.
