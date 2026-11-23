@@ -9,10 +9,22 @@ from scipy.io import wavfile
 from scipy.signal import butter, sosfilt
 
 SR = 48000
-DUR = 57.5
+DUR = 61.0
 OUT = sys.argv[1] if len(sys.argv) > 1 else "."
 rng = np.random.default_rng(7)
 N = int(SR * DUR)
+
+
+# tempo original da animação → tempo final (o inverso do re-mapeamento em motion.html)
+WARP = [(0, 0), (5.4, 4.6), (8.2, 6.0), (11.3, 7.1), (13.0, 10.2), (19.5, 17.1), (25.5, 23.0), (33.5, 31.2),
+        (41.0, 39.1), (42.6, 41.0), (45.3, 42.4), (48.4, 46.4), (54.2, 51.6), (60.5, 57.0)]
+
+
+def W(old):
+    for (n0, o0), (n1, o1) in zip(WARP, WARP[1:]):
+        if old <= o1:
+            return n0 + (n1 - n0) * ((old - o0) / (o1 - o0))
+    return WARP[-1][0] + (old - WARP[-1][1])
 
 
 def t_arr(sec):
@@ -71,7 +83,7 @@ CHORDS = [
 music = np.zeros((N, 2))
 
 # seções (segundos) alinhadas às cenas
-INTRO_END, GROOVE_START, OUTRO_START, END = 4.6, 10.2, 51.6, 57.0
+INTRO_END, GROOVE_START, OUTRO_START, END = W(4.6), W(10.2), W(51.6), 60.5
 
 
 def section_gain(t, part):
@@ -80,7 +92,7 @@ def section_gain(t, part):
             return 0.0
         if t < GROOVE_START:
             return 0.45
-        if t < 46.4:
+        if t < W(46.4):
             return 1.0
         if t < OUTRO_START:
             return 0.7
@@ -184,8 +196,8 @@ while t0 < END:
 
 # acorde final + cauda
 for note in [48, 55, 60, 64, 67, 72]:
-    add(music, pad_voice(midi(note), 4.5), 53.0, 0.06)
-    add(music, pluck(midi(note + 12), 3.0), 53.0 + 0.04 * (note % 5), 0.09)
+    add(music, pad_voice(midi(note), 4.5), W(53.0), 0.06)
+    add(music, pluck(midi(note + 12), 3.0), W(53.0) + 0.04 * (note % 5), 0.09)
 
 # fade-in inicial e fade-out
 tt = np.arange(N) / SR
@@ -245,38 +257,38 @@ def shutter():
 
 
 # abertura
-add(sfx, whoosh(1.0), 0.05, 0.22)
-add(sfx, pop(520), 0.95, 0.35)
+add(sfx, whoosh(1.0), W(0.05), 0.22)
+add(sfx, pop(520), W(0.95), 0.35)
 soft_tick = lp(tick(), 6000)
 for i in range(16):  # digitação da frase (1,8 s → 3,6 s), cliques espaçados e suaves
-    add(sfx, soft_tick, 1.8 + i * (1.8 / 16) + rng.uniform(0, 0.02), 0.03, pan=rng.uniform(-0.3, 0.3))
+    add(sfx, soft_tick, W(1.8 + i * (1.8 / 16) + rng.uniform(0, 0.02)), 0.03, pan=rng.uniform(-0.3, 0.3))
 # problema
-add(sfx, whoosh(0.8), 4.5, 0.25)
-add(sfx, whoosh(0.9, up=False), 4.9, 0.14, pan=0.5)
+add(sfx, whoosh(0.8), W(4.5), 0.25)
+add(sfx, whoosh(0.9, up=False), W(4.9), 0.14, pan=0.5)
 for i, at in enumerate([6.0, 6.55, 7.1]):
-    add(sfx, pop(660 + 110 * i), at, 0.25, pan=-0.4)
+    add(sfx, pop(660 + 110 * i), W(at), 0.25, pan=-0.4)
 # passos
 for at in (10.15, 17.05, 22.95, 31.15, 39.05):
-    add(sfx, whoosh(0.7), at, 0.22)
-add(sfx, whoosh(1.2, up=False), 13.1, 0.18, pan=0.4)   # foto voando para o celular
-add(sfx, shutter(), 14.45, 0.35, pan=0.5)
+    add(sfx, whoosh(0.7), W(at), 0.22)
+add(sfx, whoosh(1.2, up=False), W(13.1), 0.18, pan=0.4)   # foto voando para o celular
+add(sfx, shutter(), W(14.45), 0.35, pan=0.5)
 for i in range(8):                                        # contador de pedidos
-    add(sfx, tick(), 19.4 + i * 0.15, 0.1, pan=-0.3)
-add(sfx, chime((76, 79, 84)), 20.6, 0.22)
-add(sfx, pop(700), 25.2, 0.28, pan=-0.4)
-add(sfx, pop(780), 27.4, 0.28, pan=-0.4)
-add(sfx, tap(), 28.0, 0.25, pan=0.5)                      # pino no mapa
-add(sfx, chime((72, 76, 79)), 29.2, 0.18)
-add(sfx, whoosh(1.4, up=False), 33.0, 0.1, pan=0.5)       # rolagem da rota
-add(sfx, pop(700), 33.2, 0.26, pan=-0.4)
-add(sfx, pop(840), 33.8, 0.26, pan=-0.4)
-add(sfx, tap(), 41.0, 0.4, pan=0.5)                       # Navegar
-add(sfx, tap(), 42.4, 0.4, pan=0.5)                       # Entregue
-add(sfx, chime((79, 84, 88), 0.06), 42.8, 0.25)
+    add(sfx, tick(), W(19.4 + i * 0.15), 0.1, pan=-0.3)
+add(sfx, chime((76, 79, 84)), W(20.6), 0.22)
+add(sfx, pop(700), W(25.2), 0.28, pan=-0.4)
+add(sfx, pop(780), W(27.4), 0.28, pan=-0.4)
+add(sfx, tap(), W(28.0), 0.25, pan=0.5)                      # pino no mapa
+add(sfx, chime((72, 76, 79)), W(29.2), 0.18)
+add(sfx, whoosh(1.4, up=False), W(33.0), 0.1, pan=0.5)       # rolagem da rota
+add(sfx, pop(700), W(33.2), 0.26, pan=-0.4)
+add(sfx, pop(840), W(33.8), 0.26, pan=-0.4)
+add(sfx, tap(), W(41.0), 0.4, pan=0.5)                       # Navegar
+add(sfx, tap(), W(42.4), 0.4, pan=0.5)                       # Entregue
+add(sfx, chime((79, 84, 88), 0.06), W(42.8), 0.25)
 # restaurante e encerramento
-add(sfx, whoosh(0.8), 46.3, 0.22)
-add(sfx, whoosh(1.0), 51.5, 0.25)
-add(sfx, pop(520), 52.0, 0.3)
+add(sfx, whoosh(0.8), W(46.3), 0.22)
+add(sfx, whoosh(1.0), W(51.5), 0.25)
+add(sfx, pop(520), W(52.0), 0.3)
 
 
 def norm(x, peak_db):

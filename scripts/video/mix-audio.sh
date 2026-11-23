@@ -5,7 +5,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 A="$ROOT/.tmp/video/audio"; mkdir -p "$A"
 python3 "$ROOT/scripts/video/audio.py" "$A"
-STARTS=(0.6 5.0 10.8 17.5 23.5 31.6 39.5 46.8 52.3)
+STARTS=(0.5 5.9 13.6 19.9 26.0 34.1 41.5 49.0 54.8)
 VOICE="${1:-}"
 if [[ -n "$VOICE" ]]; then
   inputs=(); filters=""; labels=""
@@ -28,5 +28,5 @@ else
     "[0:a]volume=0.62[m];[1:a]volume=0.8[s];[m][s]amix=inputs=2:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[out]" -map "[out]" -ar 48000 "$A/mix.wav"
   OUT="$ROOT/video-demo/RotaPronta-demo-com-audio.mp4"
 fi
-ffmpeg -hide_banner -loglevel error -y -i "$ROOT/video-demo/RotaPronta-demo.mp4" -i "$A/mix.wav" -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -t 57 -movflags +faststart "$OUT"
+ffmpeg -hide_banner -loglevel error -y -i "$ROOT/video-demo/RotaPronta-demo.mp4" -i "$A/mix.wav" -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -t 60.5 -movflags +faststart "$OUT"
 echo "gerado: $OUT"
