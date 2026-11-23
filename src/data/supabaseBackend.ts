@@ -1,4 +1,4 @@
-import { createClient, FunctionsHttpError, type SupabaseClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { GeocodeCandidate, LatLng } from "@core/types.ts";
 import { env } from "@/lib/env.ts";
 import { uuid } from "@/lib/utils.ts";
@@ -101,16 +101,23 @@ export class SupabaseBackend implements Backend {
 
   private async call<T>(action: string, body: Record<string, unknown> = {}): Promise<T> {
     if (typeof navigator !== "undefined" && !navigator.onLine) throw new BackendError("offline", "Sem conexão. Esta ação precisa de internet.");
-    const { data, error } = await this.sb.functions.invoke("rota-api", { body: { action, ...body } });
-    if (error) {
-      if (error instanceof FunctionsHttpError) {
-        const res = error.context as Response;
-        const payload = await res.json().catch(() => ({}));
-        throw new BackendError(payload.code ?? "server_error", payload.message ?? "Falha no servidor.", res.status, payload);
-      }
+    const { data } = await this.sb.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) throw new BackendError("unauthorized", "Sessão expirada. Entre novamente.", 401);
+    const base = env.functionsUrl || `${env.supabaseUrl}/functions/v1`;
+    let res: Response;
+    try {
+      res = await fetch(`${base}/rota-api`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, apikey: env.supabaseAnonKey },
+        body: JSON.stringify({ action, ...body }),
+      });
+    } catch {
       throw new BackendError("network", "Não foi possível falar com o servidor. Verifique a conexão.");
     }
-    return data as T;
+    const payload = await res.json().catch(() => ({}));
+    if (!res.ok) throw new BackendError(payload.code ?? "server_error", payload.message ?? "Falha no servidor.", res.status, payload);
+    return payload as T;
   }
 
   // ── autenticação

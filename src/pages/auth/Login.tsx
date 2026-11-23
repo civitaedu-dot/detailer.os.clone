@@ -6,7 +6,7 @@ import { getRealBackend, useSession } from "@/data/session.tsx";
 import { AuthLayout } from "./AuthLayout.tsx";
 
 export function Login() {
-  const { backend, realAvailable, status, mode, chooseReal } = useSession();
+  const { backend, realAvailable, status, mode, chooseReal, refresh } = useSession();
   const nav = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +23,7 @@ export function Login() {
       const b = getRealBackend();
       if (!b) throw new Error("Servidor não configurado.");
       await b.signIn(email.trim(), password);
+      await refresh(); // carrega a sessão antes de entrar na área logada
       nav("/app", { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Não foi possível entrar.");

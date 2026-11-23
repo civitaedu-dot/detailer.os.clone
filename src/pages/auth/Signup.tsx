@@ -7,7 +7,7 @@ import { getRealBackend, useSession } from "@/data/session.tsx";
 import { AuthLayout } from "./AuthLayout.tsx";
 
 export function Signup() {
-  const { realAvailable, chooseReal } = useSession();
+  const { realAvailable, chooseReal, refresh } = useSession();
   const nav = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -26,7 +26,7 @@ export function Signup() {
       if (!b) throw new Error("Servidor não configurado.");
       const r = await b.signUp(email.trim(), password, name.trim());
       if (r.needsConfirmation) setSent(true);
-      else nav("/app/configurar", { replace: true });
+      else { await refresh(); nav("/configurar", { replace: true }); }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Não foi possível criar a conta.");
     } finally {

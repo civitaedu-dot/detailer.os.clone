@@ -17,7 +17,8 @@ export function OrderStatusBadge({ order }: { order: Order }) {
 }
 
 export function orderTitle(o: Order) {
-  return o.orderCode ? `Pedido ${o.orderCode}` : o.recipientName ?? "Pedido sem número";
+  if (o.orderCode) return `Pedido ${o.orderCode.startsWith("#") ? o.orderCode : `#${o.orderCode}`}`;
+  return o.recipientName ?? (o.street ? `${o.street}${o.number ? `, ${o.number}` : ""}` : "Pedido sem número");
 }
 
 export function addressLine(o: Order) {

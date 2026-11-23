@@ -206,6 +206,13 @@ const left = await db.query("select (select count(*) from public.orders where ba
 assert.deepEqual(left.rows[0], { o: 0, e: 0, i: 0 });
 pass("excluir o lote remove pedidos, imagens e registros");
 
+// ── Excluir a conta de um entregador não apaga lotes nem registros do restaurante
+await db.query("delete from auth.users where id = $1", [users.driverA2]);
+const kept = await db.query("select created_by from public.batches where id = $1", [batchA2]);
+assert.equal(kept.rowCount, 1);
+assert.equal(kept.rows[0].created_by, null);
+pass("excluir conta de usuário preserva os lotes da organização");
+
 void orgC;
 await db.end();
 console.log("\nTodos os testes de banco/RLS passaram.");

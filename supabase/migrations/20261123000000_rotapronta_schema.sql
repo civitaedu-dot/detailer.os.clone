@@ -16,7 +16,7 @@ create table public.organizations (
   id uuid primary key default gen_random_uuid(),
   name text not null check (char_length(name) between 1 and 120),
   kind public.org_kind not null,
-  created_by uuid not null references auth.users (id) on delete restrict,
+  created_by uuid references auth.users (id) on delete set null,
   default_base_id uuid,
   -- preferências operacionais: { "returnToBase": bool, "serviceMinutes": int, "startFrom": "base"|"current" }
   settings jsonb not null default '{}'::jsonb,
@@ -73,7 +73,8 @@ create table public.invites (
 create table public.batches (
   id uuid primary key default gen_random_uuid(),
   org_id uuid not null references public.organizations (id) on delete cascade,
-  created_by uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  -- excluir a conta de quem criou não apaga lotes do restaurante
+  created_by uuid default auth.uid() references auth.users (id) on delete set null,
   assigned_driver_id uuid references auth.users (id) on delete set null,
   base_id uuid references public.bases (id) on delete set null,
   title text check (char_length(title) <= 80),
@@ -182,7 +183,7 @@ create table public.routes (
   original_travel_s integer,
   polylines text[] not null default '{}',
   warnings text[] not null default '{}',
-  created_by uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  created_by uuid default auth.uid() references auth.users (id) on delete set null,
   created_at timestamptz not null default now(),
   unique (batch_id, version)
 );
@@ -214,7 +215,7 @@ create table public.stop_events (
   undoes_event_id uuid references public.stop_events (id) on delete cascade,
   occurred_at timestamptz not null,
   recorded_at timestamptz not null default now(),
-  recorded_by uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  recorded_by uuid default auth.uid() references auth.users (id) on delete set null,
   check (kind <> 'undo' or undoes_event_id is not null)
 );
 create index stop_events_batch_idx on public.stop_events (batch_id, occurred_at);
@@ -382,7 +383,8 @@ create or replace function public.guard_batch()
 returns trigger language plpgsql security definer set search_path = '' as $$
 begin
   if tg_op = 'UPDATE' then
-    if new.org_id <> old.org_id or new.created_by <> old.created_by then
+    -- created_by só pode virar nulo (exclusão da conta); nunca ser trocado
+    if new.org_id <> old.org_id or (new.created_by is not null and new.created_by is distinct from old.created_by) then
       raise exception 'campos imutáveis' using errcode = '42501';
     end if;
   end if;

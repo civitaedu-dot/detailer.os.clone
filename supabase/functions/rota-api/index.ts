@@ -131,7 +131,7 @@ async function extract(ctx: Ctx) {
       .from("batch_images")
       .update({ status: "extracting", attempts: img.attempts + 1, claimed_at: new Date().toISOString() })
       .eq("id", img.id)
-      .or(`status.in.(uploaded,failed),and(status.eq.extracting,claimed_at.lt.${staleIso})`)
+      .or(`status.in.(uploaded,failed),and(status.eq.extracting,claimed_at.lt."${staleIso}")`)
       .select("id")
       .maybeSingle();
     if (!claimed) { results.push({ id: img.id, status: "in_progress" }); continue; }
