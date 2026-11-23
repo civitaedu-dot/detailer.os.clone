@@ -1,4 +1,4 @@
-import { del, get, set } from "idb-keyval";
+import { del, get, set } from "@/lib/kv.ts";
 
 /** Fotos aguardando envio ficam no aparelho até o servidor confirmar (retomada após falha/recarga). */
 export type StoredCapture = {

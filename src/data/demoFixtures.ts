@@ -7,6 +7,10 @@ import type { GeocodeCandidate, LatLng } from "@core/types.ts";
  * aproximadas e servem apenas ao mapa ilustrativo.
  */
 
+/** Caminho base dos arquivos públicos ("/" no site; "./" quando publicado como página). */
+const BASE: string = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? "/";
+export const demoAsset = (name: string) => `${BASE}demo/${name}`;
+
 export const DEMO_RESTAURANT = {
   name: "Cantina Bela Vista (fictícia)",
   base: { name: "Cantina Bela Vista", addressLine: "Rua Afonso Celso, 77 - Vila Mariana", city: "São Paulo", uf: "SP", lat: -23.5878, lng: -46.6345 },
@@ -30,7 +34,7 @@ export type DemoReceipt = {
 
 export const DEMO_PHOTOS: Array<{ file: string; title: string; receipts: DemoReceipt[] }> = [
   {
-    file: "/demo/notinhas-foto-1.jpg",
+    file: demoAsset("notinhas-foto-1.jpg"),
     title: "Cinco notinhas lado a lado",
     receipts: [
       { code: "2041", name: "Ana Paula S.", phone: "(11) 98765-4321", street: "Rua Domingos de Morais", number: "1450", neighborhood: "Vila Mariana", complement: "Casa 2", reference: "Portão cinza", items: ["1 Lasanha bolonhesa", "1 Refri lata"], total: "R$ 58,90" },
@@ -41,7 +45,7 @@ export const DEMO_PHOTOS: Array<{ file: string; title: string; receipts: DemoRec
     ],
   },
   {
-    file: "/demo/notinhas-foto-2.jpg",
+    file: demoAsset("notinhas-foto-2.jpg"),
     title: "Mais três notinhas (uma repetida)",
     receipts: [
       { code: "2046", name: "Fábio L.", phone: "(11) 99876-5500", street: "Rua Vergueiro", number: "2045", neighborhood: "Vila Mariana", complement: "Bloco B", reference: null, items: ["1 Parmegiana", "1 Suco"], total: "R$ 67,40", note: "Interfone quebrado, ligar ao chegar" },

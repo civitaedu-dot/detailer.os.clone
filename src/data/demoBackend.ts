@@ -1,4 +1,4 @@
-import { del, get, set } from "idb-keyval";
+import { del, get, set } from "@/lib/kv.ts";
 import { foldText, streetKey } from "@core/address.ts";
 import { sha256Hex, findPossibleDuplicates } from "@core/dedupe.ts";
 import { normalizeExtraction } from "@core/extraction.ts";

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Wordmark } from "@/components/layout/Brand.tsx";
 import { SchematicMap } from "@/components/map/SchematicMap.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { DEMO_LOCATIONS, DEMO_RESTAURANT } from "@/data/demoFixtures.ts";
+import { DEMO_LOCATIONS, DEMO_RESTAURANT, demoAsset } from "@/data/demoFixtures.ts";
 import { useSession } from "@/data/session.tsx";
 
 const PREVIEW = ["rua cubatao|1100", "rua vergueiro|2045", "rua domingos de morais|1450", "rua joaquim tavora|820"].map((k, i) => ({
@@ -40,7 +40,7 @@ export function Landing() {
 
         <div className="relative min-w-0">
           <div className="overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-float)]">
-            <img src="/demo/notinhas-foto-1.jpg" alt="Exemplo: cinco notinhas fictícias fotografadas lado a lado" className="aspect-[2.6/1] w-full object-cover object-top" />
+            <img src={demoAsset("notinhas-foto-1.jpg")} alt="Exemplo: cinco notinhas fictícias fotografadas lado a lado" className="aspect-[2.6/1] w-full object-cover object-top" />
             <div className="grid grid-cols-[minmax(0,1fr)] gap-3 p-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
               <SchematicMap className="h-48" ariaLabel="Exemplo de rota com quatro paradas numeradas" origin={{ lat: DEMO_RESTAURANT.base.lat, lng: DEMO_RESTAURANT.base.lng }} stops={PREVIEW}
                 path={[{ lat: DEMO_RESTAURANT.base.lat, lng: DEMO_RESTAURANT.base.lng }, ...PREVIEW]} />

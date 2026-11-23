@@ -11,7 +11,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    VitePWA({
+    process.env.VITE_EMBED === "1" ? null : VitePWA({
       registerType: "prompt",
       injectRegister: false,
       includeAssets: ["favicon.svg", "icons/*.png", "demo/*.jpg"],

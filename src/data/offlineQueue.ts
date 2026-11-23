@@ -1,4 +1,4 @@
-import { clear } from "idb-keyval";
+import { clear } from "@/lib/kv.ts";
 import type { Backend } from "./backend.ts";
 import { BackendError, type BatchBundle, type StopEventRow } from "./types.ts";
 
