@@ -12,3 +12,7 @@ supabase/.branches
 .DS_Store
 .tmp
 dist-*
+video-demo
+scripts/video/shots
+scripts/video/frames
+scripts/video/prev-*.png
